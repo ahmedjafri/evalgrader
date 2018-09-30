@@ -70,7 +70,7 @@ func InitCombinedBarcode(barcodes ...barcode.Barcode) (*CombinedBarcode, error) 
 
 // ColorModel returns the Image's color model.
 func (cb CombinedBarcode) ColorModel() color.Model {
-	return cb.barcodes[0].ColorModel()
+	return color.GrayModel
 }
 
 // Bounds returns the domain for which At can return non-zero color.
