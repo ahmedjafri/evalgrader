@@ -36,17 +36,14 @@ func InitCombinedBarcode(direction Direction, barcodes []barcode.Barcode, option
 		return nil, errors.New("No barcodes supplied")
 	}
 
-	// TODO(ajafri): support horizontal barcodes as well
-	if direction != vertical {
-		return nil, errors.New("Only the vertical direction supported currently")
-	}
 	var width, height int
-
 	if direction == vertical {
 		// init the width of the combined barcode to
 		width = barcodes[0].Bounds().Max.X
 	} else if direction == horizontal {
-		// TODO(ajafri):
+		height = barcodes[0].Bounds().Max.Y
+	} else {
+		return nil, fmt.Errorf("Unsupported direction %q", direction)
 	}
 
 	var ret CombinedBarcode
@@ -59,9 +56,7 @@ func InitCombinedBarcode(direction Direction, barcodes []barcode.Barcode, option
 		switch direction {
 		case vertical:
 			// Make sure that all the barcodes have the same width
-			if width == b.Bounds().Max.X {
-				width = b.Bounds().Max.X
-			} else {
+			if width != b.Bounds().Max.X {
 				return nil, errors.New("Barcodes are not the same width")
 			}
 
@@ -77,7 +72,22 @@ func InitCombinedBarcode(direction Direction, barcodes []barcode.Barcode, option
 				Rectangle: image.Rect(0, top, width, height),
 			})
 		case horizontal:
-			// TODO(ajafri): finish this
+			// Make sure that all the barcodes have the same height
+			if height != b.Bounds().Max.Y {
+				return nil, errors.New("Barcodes are not the same height")
+			}
+
+			rightMost := width
+			// Add padding between barcodes
+			if rightMost != 0 {
+				rightMost += ret.options.Padding
+			}
+
+			width += b.Bounds().Max.X
+			ret.barcodes = append(ret.barcodes, barcodeRect{
+				Barcode:   b,
+				Rectangle: image.Rect(rightMost, 0, width, height),
+			})
 		}
 	}
 
@@ -98,7 +108,8 @@ func (cb CombinedBarcode) Bounds() image.Rectangle {
 			width = b.Bounds().Max.X
 			height += b.Bounds().Max.Y
 		} else if cb.direction == horizontal {
-			// TODO(ajafri):
+			width += b.Bounds().Max.X
+			height = b.Bounds().Max.Y
 		}
 	}
 
@@ -112,15 +123,22 @@ func (cb CombinedBarcode) At(x, y int) color.Color {
 	for _, b := range cb.barcodes {
 		p := image.Point{X: x, Y: y}
 		if p.In(b.Rectangle) {
+			var localX, localY int
 			if cb.direction == vertical {
+				localX = x
 				// For vertical barcodes we need to adjust the Y coordinate
 				// to the local barcode when getting the color value at that coordinate
-				localY := y - b.Rectangle.Min.Y
-				return b.Barcode.At(x, localY)
+				localY = y - b.Rectangle.Min.Y
+			} else if cb.direction == horizontal {
+				// For horizontal barcodes we need to adjust the X coordinate
+				// to the local barcode when getting the color value at that coordinate
+				localX = x - b.Rectangle.Min.X
+				localY = y
 			} else {
 				panic(fmt.Errorf("Unsupported direction %q", cb.direction))
 			}
 
+			return b.Barcode.At(localX, localY)
 		}
 	}
 
