@@ -14,9 +14,16 @@ func main() {
 	pdf.AddPage()
 	pdf.SetFont("Arial", "", 11)
 
-	cb, err := InitCombinedBarcode(
-		singleBarcode("11231234234412"),
+	cb, err := InitCombinedBarcode(vertical,
+		[]barcode.Barcode{
+			singleBarcode("11231234234412"),
+			singleBarcode("1123123"),
+		},
+		&CombinedBarcodeOptions{
+			Padding: 10,
+		},
 	)
+
 	if err != nil {
 		panic(err)
 	}

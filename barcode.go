@@ -9,7 +9,7 @@ import (
 	"github.com/boombuler/barcode"
 )
 
-type direction string
+type Direction string
 
 type barcodeRect struct {
 	barcode.Barcode
@@ -17,22 +17,29 @@ type barcodeRect struct {
 }
 
 type CombinedBarcode struct {
-	direction
-	barcodes []barcodeRect
+	direction Direction
+	barcodes  []barcodeRect
+	options   CombinedBarcodeOptions
+}
+
+type CombinedBarcodeOptions struct {
+	Padding int
 }
 
 const (
-	horizontal direction = "horizontal"
-	vertical   direction = "vertical"
+	horizontal Direction = "horizontal"
+	vertical   Direction = "vertical"
 )
 
-func InitCombinedBarcode(barcodes ...barcode.Barcode) (*CombinedBarcode, error) {
+func InitCombinedBarcode(direction Direction, barcodes []barcode.Barcode, options *CombinedBarcodeOptions) (*CombinedBarcode, error) {
 	if len(barcodes) == 0 {
 		return nil, errors.New("No barcodes supplied")
 	}
 
 	// TODO(ajafri): support horizontal barcodes as well
-	direction := vertical
+	if direction != vertical {
+		return nil, errors.New("Only the vertical direction supported currently")
+	}
 	var width, height int
 
 	if direction == vertical {
@@ -44,6 +51,10 @@ func InitCombinedBarcode(barcodes ...barcode.Barcode) (*CombinedBarcode, error) 
 
 	var ret CombinedBarcode
 	ret.direction = direction
+	if options != nil {
+		ret.options = *options
+	}
+
 	for _, b := range barcodes {
 		switch direction {
 		case vertical:
@@ -55,6 +66,11 @@ func InitCombinedBarcode(barcodes ...barcode.Barcode) (*CombinedBarcode, error) 
 			}
 
 			top := height
+			// Add padding between barcodes
+			if top != 0 {
+				top += ret.options.Padding
+			}
+
 			height += b.Bounds().Max.Y
 			ret.barcodes = append(ret.barcodes, barcodeRect{
 				Barcode:   b,
