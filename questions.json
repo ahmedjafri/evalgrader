@@ -1,0 +1,44 @@
+[
+  {
+    "question": "How many fingers do I have?",
+    "answers": [
+      {
+        "answer": "Five",
+        "correct": true
+      },
+      {
+        "answer": "One",
+        "correct": false
+      },
+      {
+        "answer": "Six",
+        "correct": false
+      },
+      {
+        "answer": "Yellow",
+        "correct": false
+      }
+    ]
+  },
+  {
+    "question": "How many fingers do you have?",
+    "answers": [
+      {
+        "answer": "Five",
+        "correct": true
+      },
+      {
+        "answer": "One",
+        "correct": false
+      },
+      {
+        "answer": "Six",
+        "correct": false
+      },
+      {
+        "answer": "Yellow",
+        "correct": false
+      }
+    ]
+  }
+]

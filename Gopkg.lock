@@ -6,14 +6,21 @@
   packages = [
     ".",
     "datamatrix",
+    "pdf417",
     "utils"
   ]
   revision = "3cfea5ab600ae37946be2b763b8ec2c1cf2d272d"
   version = "v1.0.0"
 
+[[projects]]
+  name = "github.com/jung-kurt/gofpdf"
+  packages = ["."]
+  revision = "14c1db30737a138f8d9797cffea58783892b2fae"
+  version = "v1.0.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b34b965c42b0c81875c00a76498015e82a99b96595cc97ae2525f7d3f8059269"
+  inputs-digest = "32d948b0b0340805732c7fdd74689f208b73c1f0339e9da90d3ae2d1d77fdd39"
   solver-name = "gps-cdcl"
   solver-version = 1
